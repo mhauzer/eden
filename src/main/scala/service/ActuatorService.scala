@@ -1,7 +1,7 @@
 package service
 
-import model.Skill
-import model.action.{Action, DateAction, DemoAction, EchoAction, NameAction, Time2Action, TimeAction, VersionAction, WeatherAction}
+import model.{Sentence, Skill}
+import model.action.{DateAction, DemoAction, DoNothingAction, EchoAction, NameAction, QuitAction, Time2Action, TimeAction, VersionAction, WeatherAction}
 
 class ActuatorService(gender: String) {
   private val personService = new PersonService(gender)
@@ -10,7 +10,9 @@ class ActuatorService(gender: String) {
     Skill.DATE -> new DateAction,
     Skill.DEMO -> new DemoAction,
     Skill.ECHO -> new EchoAction(gender),
-    Skill.NAME -> new NameAction(personService.getPerson.name),
+    Skill.NAME -> new NameAction(personService.person.name),
+    Skill.NOTHING -> new DoNothingAction(),
+    Skill.QUIT -> new QuitAction(),
     Skill.TIME -> new TimeAction,
     Skill.TIME2 -> new Time2Action,
     Skill.VERSION -> new VersionAction,
@@ -19,8 +21,11 @@ class ActuatorService(gender: String) {
   private val wordmap = Map(
     "data" -> Skill.DATE,
     "dzień" -> Skill.DATE,
+    "" -> Skill.NOTHING,
     "demo" -> Skill.DEMO,
     "imię" -> Skill.NAME,
+    "koniec" -> Skill.QUIT,
+    "q" -> Skill.QUIT,
     "czas" -> Skill.TIME,
     "godzina" -> Skill.TIME,
     "czas2" -> Skill.TIME2,
@@ -39,10 +44,14 @@ class ActuatorService(gender: String) {
      */
 
   private def understand(input: String) = {
-    if (wordmap.keys.exists(_ == input)) wordmap(input) else Skill.ECHO
+    val sentence = new Sentence(input)
+
+    val firstWord = sentence.words.head.toLowerCase
+
+    if (wordmap.keys.exists(_ == firstWord)) wordmap(firstWord) else Skill.ECHO
   }
 
   def act(input: String): String = {
-    skills(understand(input.toLowerCase)).perform(input)
+    skills(understand(input)).perform(input)
   }
 }

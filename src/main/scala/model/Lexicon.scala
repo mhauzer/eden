@@ -1,8 +1,6 @@
 package model
 
-import java.text.SimpleDateFormat
-import java.util.Date
-
+import java.util.{Calendar, Date, GregorianCalendar}
 import scala.collection.immutable.HashMap
 import scala.util.Random
 
@@ -11,7 +9,16 @@ import scala.util.Random
 object SentencePurposes extends Enumeration {
   type SentencePurpose = Value
   
-  val Declarative, Interrogative, Imperative, Exclamatory = Value
+  val Unknown, Declarative, Interrogative, Imperative, Exclamatory = Value
+
+  def fromChar(c: Char): SentencePurpose= {
+    c match {
+      case '.' => Declarative
+      case '?' => Interrogative
+      case '!' => Exclamatory
+      case _ => Unknown
+    }
+  }
 }
 
 
@@ -20,7 +27,17 @@ class Phrase(words: List[String]) {
 }
 
 
-class Sentence(words: List[String], purpose: SentencePurposes.SentencePurpose) {  
+class Sentence(ws: List[String], purpose: SentencePurposes.SentencePurpose) {
+  val words: List[String] = ws
+
+  def this(ws: List[String]) {
+    this (ws, if (ws != "" :: Nil) SentencePurposes.fromChar(ws.last.last) else SentencePurposes.Unknown)
+}
+
+  def this(s: String) = {
+    this(s.split(" +").toList)
+ }
+
   override def toString: String = (words.head.capitalize :: words.tail).reduceLeft(_ + " " + _) + Sentence.punctuation(purpose)
 }
 
@@ -35,30 +52,51 @@ object Sentence {
     }
 }
 
-class Noun(g: String, singular: NounDeclension, plural: NounDeclension) {
-  val gender: String = g
-  def get(number: String): NounDeclension = 
-    if (number == "singular") singular
-    else if (number == "plural") plural
-    else new NounDeclension("error: " + number + " not found!", "", "", "", "", "", "")
-}
-
 class NounDeclension(nominative: String, genitive: String, dative: String, accusative: String, ablative: String, locative: String, vocative: String) {  
-  def get(`case`: String): String = 
-    if (`case` == "nominative" || `case` == "mianownik" || `case` == "M") nominative
-    else if (`case` == "genitive" || `case` == "dopełniacz" || `case` == "D") genitive
-    else if (`case` == "dative" || `case` == "celownik" || `case` == "C") dative
-    else if (`case` == "accusative" || `case` == "biernik" || `case` == "B") accusative
-    else if (`case` == "ablative" || `case` == "narzędnik" || `case` == "N") ablative
-    else if (`case` == "locative" || `case` == "miejscownik" || `case` == "Ms") locative
-    else if (`case` == "vocative" || `case` == "wołacz" || `case` == "W") vocative
-    else ""
-  
+  def get(`case`: String): String = {
+    `case` match {
+      case "nominative" => nominative
+      case "mianownik" => nominative
+      case "M" => nominative
+      case "genitive" => genitive
+      case "dopełniacz" => genitive
+      case "D" => genitive
+      case "dative" => dative
+      case "celownik" => dative
+      case "C" => dative
+      case "accusative" => accusative
+      case "biernik" => accusative
+      case "B" => accusative
+      case "ablative" => ablative
+      case "narzędnik" => ablative
+      case "N" => ablative
+      case "locative" => locative
+      case "miejscownik" => locative
+      case "Ms" => locative
+      case "vocative" => vocative
+      case "wołacz" => vocative
+      case "W" => vocative
+      case _ => ""
+    }
+  }
+
   def help(lang: String): List[String] =
     if (lang == "pl")
       "mianownik" :: "(kto? co?)" :: "dopełniacz" :: "(kogo? czego?)" :: "celownik" :: "(komu? czemu?)" :: "biernik" :: "(kogo? co?)" :: "narzędnik" :: "(z kim? z czym?)" :: "miejscownik" :: "(o kim? o czym?)" :: "wołacz" :: "(o!)" :: Nil
     else
       "Help" :: "not found" :: Nil    
+}
+
+class Noun(g: String, singular: NounDeclension, plural: NounDeclension) {
+  val gender: String = g
+
+  def get(number: String): NounDeclension = {
+    number match {
+      case "singular" => singular
+      case "plural" => plural
+      case _ => new NounDeclension(s"error: $number not found!", "", "", "", "", "", "")
+    }
+  }
 }
 
 
@@ -86,23 +124,23 @@ object Lexicon {
     ),
     "dzień" -> new Noun(
       "m",
-      new NounDeclension("dzień", "", "", "", "", "", ""),
-      new NounDeclension("dni", "", "", "", "", "", "")
+      new NounDeclension("dzień", "dnia", "dniu", "dzień", "dniem", "dniu", "dniu"),
+      new NounDeclension("dni", "dni", "dniom", "dni", "dniami", "dniach", "dni")
     ),
     "godzina" -> new Noun(
       "f",
-      new NounDeclension("godzina", "", "", "", "", "", ""),
-      new NounDeclension("godziny", "", "", "", "", "", "")
+      new NounDeclension("godzina", "godziny", "godzinie", "godzinę", "godziną", "godzinie", "godzino"),
+      new NounDeclension("godziny", "godzin", "godzinom", "godziny", "godzinami", "godzinach", "godziny")
     ),
     "grudzień" -> new Noun(
       "m",
-      new NounDeclension("grudzień", "", "", "", "", "", ""),
-      new NounDeclension("grudnie", "", "", "", "", "", "")
+      new NounDeclension("grudzień", "grudnia", "grudniowi", "grudzień", "grudniem", "grudniu", "grudniu"),
+      new NounDeclension("grudnie", "grudni", "grudniom", "grudnie", "grudniami", "grudniach", "grudnie")
     ),
     "herbata" -> new Noun(
       "f",
-      new NounDeclension("herbata", "", "", "", "", "", ""),
-      new NounDeclension("herbaty", "", "", "", "", "", "")
+      new NounDeclension("herbata", "herbaty", "herbacie", "herbatę", "hebatą", "herbacie", "herbato"),
+      new NounDeclension("herbaty", "herbat", "herbatom", "herbaty", "herbatami", "herbatach", "herbaty")
     ),
     "kwiecień" -> new Noun(
       "m",
@@ -250,7 +288,8 @@ object Lexicon {
       "plural" -> "usłyszcie"
     )
   )
-  
+
+  /*
   private val pronoun_adverbs = Map(
     "jak" -> Map(
       "m" -> Map(
@@ -261,7 +300,7 @@ object Lexicon {
       )   
     )
   )
-
+  */
   private val names = Map(
     "f" -> Seq("Anna", "Ewa", "Karolina"),
     "m" -> Seq("Adam", "Marcin", "Maciek")
@@ -282,8 +321,6 @@ object PhraseGenerator {
 	val DAY_IN_SECONDS: Int = 24 * HOUR_IN_SECONDS
 	val MONTH_IN_SECONDS: Int = 30 * DAY_IN_SECONDS
 	val YEAR_IN_SECONDS: Int = 365 * DAY_IN_SECONDS
-
-
 
   // https://alvinalexander.com/scala/scala-get-current-date-time-hour-calendar-example/
   def sayTemporalOrientation(distantTime: Date, currentTime: Date): String =
@@ -436,11 +473,9 @@ object PhraseGenerator {
 			}
     }
 
-    //println(s"phrase=$phrase")
-    
     var expression = ""
     
-		if (phrase.length == 0)
+		if (phrase.isEmpty)
 		{
 			if (number > 6) 
 			{
@@ -449,16 +484,12 @@ object PhraseGenerator {
 			}
 				
 			val nounInfo = determineNounCaseForNumber(number.toInt)
-			
-//			if (orientation == "future") 
-//				nounInfo("case") = "B"
-			
+
       // było '-'
 			if (number != 0 && number > 1)
 				phrase = number.toString
 					
-//      println(s"baseform=$unit, ${nounInfo("number")}, ${nounInfo("case")}")
-			phrase = phrase + " " + Lexicon.getNounForm(unit, nounInfo("number"), nounInfo("case"))									
+			phrase = phrase + " " + Lexicon.getNounForm(unit, nounInfo("number"), nounInfo("case"))
 			
 			if (number == 0)
 			{
@@ -468,15 +499,14 @@ object PhraseGenerator {
 				phrase = if (orientation == "past") s"$phrase temu" else s"za $phrase"
 		}
 		
-		if (interval("totalDays") < 3 && interval("totalHours") >= 4)
-			phrase = phrase + " " + sayTimeOfDay(start.getHours, "A")
-    			
-          
+		if (interval("totalDays") < 3 && interval("totalHours") >= 4) {
+      val startCal = new GregorianCalendar()
+      startCal.setTime(start)
+      phrase = phrase + " " + sayTimeOfDay(startCal.get(Calendar.HOUR), "A")
+    }
     phrase
   }
- 
- 
- 
+
 	// diffTime()
 	// returns absolute interval between two time points
 	// start - first time point (string)
@@ -493,27 +523,22 @@ object PhraseGenerator {
 		var minutes      = -1L
 		var seconds      = -1L
 		
-    val dateFormat = new SimpleDateFormat("yyyy-MM-dd")
-    val startMidnight = start.clone().asInstanceOf[Date]
-		val endMidnight   = end.clone().asInstanceOf[Date]
+    val startMidnight = new GregorianCalendar()
+    val endMidnight = new GregorianCalendar()
+
+    startMidnight.setTime(start)
+    endMidnight.setTime(end)
 
     if (accuracy == "days") {
-      startMidnight.setHours(0)
-      startMidnight.setMinutes(0)
-      startMidnight.setSeconds(0)
-      endMidnight.setHours(0)
-      endMidnight.setMinutes(0)
-      endMidnight.setSeconds(0)      
+      startMidnight.set(Calendar.HOUR, 0)
+      startMidnight.set(Calendar.MINUTE, 0)
+      startMidnight.set(Calendar.SECOND, 0)
+      endMidnight.set(Calendar.HOUR, 0)
+      endMidnight.set(Calendar.MINUTE, 0)
+      endMidnight.set(Calendar.SECOND, 0)
     }
 
-    /*
-    println(s"diffTime, $accuracy")	
-    println(startMidnight)
-    println(endMidnight)    
-    println(endMidnight.getTime() / 1000)
-    println(startMidnight.getTime() / 1000)
-    */
-    var interval = (endMidnight.getTime  / 1000 - startMidnight.getTime / 1000).abs
+    var interval = (endMidnight.getTime.getTime  / 1000 - startMidnight.getTime.getTime / 1000).abs
     totalSeconds = interval			
 			
 		totalHours   = totalSeconds / HOUR_IN_SECONDS

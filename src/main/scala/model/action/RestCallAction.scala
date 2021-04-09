@@ -1,4 +1,5 @@
 package model.action
 
-abstract class RestCallAction(url: String) extends Action {
+abstract class RestCallAction(aUrl: String) extends Action {
+  val url: String = aUrl
 }
