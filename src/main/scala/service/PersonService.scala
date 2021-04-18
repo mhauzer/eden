@@ -1,5 +1,6 @@
 package service
 
+import cognition.Idea.Idea
 import model.person.Person
 import nlp.Lexicon
 

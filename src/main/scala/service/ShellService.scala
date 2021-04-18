@@ -1,9 +1,9 @@
 package service
 
 import actuator.MessageBoardActuator
+import cognition.Idea
+import cognition.Idea.Idea
 import communication.MessageBoardEntry
-import model.Skill
-import model.Skill._
 import sensor.MessageBoardSensor
 
 /*
@@ -19,9 +19,9 @@ class ShellService(gender: String) {
 
   // reaction types:
   // - reflex based on a simple association (meme patterns associated with other meme patterns)
-  def react(inputMemes: List[Skill]): List[Skill] = {
-    if (inputMemes.head == Skill.NAME)
-      (if (personService.gender == "f") Skill.EVE else Skill.ADAM) :: Nil
+  def react(inputMemes: List[Idea]): List[Idea] = {
+    if (inputMemes.head == Idea.NAME)
+      (if (personService.gender == "f") Idea.EVE else Idea.ADAM) :: Nil
     else
       inputMemes
   }

@@ -1,0 +1,5 @@
+package cognition
+
+trait SensoryType {
+
+}
