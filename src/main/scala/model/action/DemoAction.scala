@@ -1,6 +1,6 @@
 package model.action
 
-import model.{Lexicon, Sentence, SentencePurposes}
+import nlp.{Lexicon, Sentence, SentencePurposes}
 
 class DemoAction extends Action {
   override def perform(input: String): String = {

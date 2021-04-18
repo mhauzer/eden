@@ -1,56 +1,8 @@
-package model
+package nlp
 
 import java.util.{Calendar, Date, GregorianCalendar}
 import scala.collection.immutable.HashMap
 import scala.util.Random
-
-// https://parentingpatch.com/sentence-purpose-declarative-interrogative-imperative-exclamatory/
-// http://www.butte.edu/departments/cas/tipsheets/grammar/sentence_type.html
-object SentencePurposes extends Enumeration {
-  type SentencePurpose = Value
-  
-  val Unknown, Declarative, Interrogative, Imperative, Exclamatory = Value
-
-  def fromChar(c: Char): SentencePurpose= {
-    c match {
-      case '.' => Declarative
-      case '?' => Interrogative
-      case '!' => Exclamatory
-      case _ => Unknown
-    }
-  }
-}
-
-
-class Phrase(words: List[String]) {
-  override def toString: String = (words.head.capitalize :: words.tail).reduceLeft(_ + " " + _)
-}
-
-
-class Sentence(ws: List[String], purpose: SentencePurposes.SentencePurpose) {
-  val words: List[String] = ws
-
-  def this(ws: List[String]) {
-    this (ws, if (ws != "" :: Nil) SentencePurposes.fromChar(ws.last.last) else SentencePurposes.Unknown)
-}
-
-  def this(s: String) = {
-    this(s.split(" +").toList)
- }
-
-  override def toString: String = (words.head.capitalize :: words.tail).reduceLeft(_ + " " + _) + Sentence.punctuation(purpose)
-}
-
-
-object Sentence {
-  def punctuation(purpose: SentencePurposes.SentencePurpose): String = 
-    purpose match {
-      case SentencePurposes.Declarative => "."
-      case SentencePurposes.Imperative => "."
-      case SentencePurposes.Interrogative => "?"
-      case SentencePurposes.Exclamatory => "!"
-    }
-}
 
 class NounDeclension(nominative: String, genitive: String, dative: String, accusative: String, ablative: String, locative: String, vocative: String) {  
   def get(`case`: String): String = {
@@ -87,16 +39,13 @@ class NounDeclension(nominative: String, genitive: String, dative: String, accus
       "Help" :: "not found" :: Nil    
 }
 
-class Noun(g: String, singular: NounDeclension, plural: NounDeclension) {
-  val gender: String = g
-
-  def get(number: String): NounDeclension = {
+class Noun(val gender: String, singular: NounDeclension, plural: NounDeclension) {
+  def get(number: String): NounDeclension =
     number match {
       case "singular" => singular
       case "plural" => plural
       case _ => new NounDeclension(s"error: $number not found!", "", "", "", "", "", "")
     }
-  }
 }
 
 
@@ -306,8 +255,13 @@ object Lexicon {
     "m" -> Seq("Adam", "Marcin", "Maciek")
   )
 
+  private val baseforms = Map(
+    "dupy" -> "dupa"
+  )
+
   private val random = new Random
-  
+
+  def getBaseform(word: String): String = baseforms.find(_._1 == word).getOrElse((word, word))._2
   def getNoun(baseform: String): Noun = nouns(baseform)
   def getNounForm(baseform: String, number: String, `case`: String): String = getNoun(baseform).get(number).get(`case`)
   def getAdjectiveForm(baseform: String, gender: String, number: String, `case`: String): String = adjectives(baseform)(gender)(number).get(`case`)
@@ -360,31 +314,25 @@ object PhraseGenerator {
 			|| (number % 100) == 14)
 			nounCase = "D"
 			
-		val result = HashMap("number" -> nounNumber, "case" -> nounCase)
-    result
+		HashMap("number" -> nounNumber, "case" -> nounCase)
 	}
-    
-    
-    
+
 	// pos: (part of sentence) S - subject, V - verb,  A - adverbial
-	def sayTimeOfDay(hour: Int, pos: String = "S"): String = 
-           if (hour == 0)  { if (pos == "A") "o północy" else "północ" }
-		  else if (hour < 4)   { if (pos == "A") "w nocy" else "noc" }
-		  else if (hour == 4)  { if (pos == "A") "nad ranem" else "nad ranem" }
-		  else if (hour < 11)  { if (pos == "A") "rano" else "rano" }
-		  else if (hour == 11) { if (pos == "A") "przed południem"	else "przed południem" }		
-		  else if (hour == 12) { if (pos == "A") "w południe" else "południe" }			
-		  else if (hour < 15)	 { if (pos == "A") "wczesnym popołudniem" else "wczesne popołudnie" }		
-		  else if (hour < 17)  { if (pos == "A") "po południu" else "popołudnie" }
-		  else if (hour < 18)  { if (pos == "A") "późnym popołudniem" else "późne popołudnie" }
-		  else if (hour < 22)  { if (pos == "A") "wieczorem" else "wieczór"	}
-		  else if (hour <= 24) { if (pos == "A") "w nocy" else "noc" }
-      else "" 
+	def sayTimeOfDay(hour: Int, pos: String = "S"): String =
+         if (hour == 0)  { if (pos == "A") "o północy" else "północ" }
+    else if (hour < 4)   { if (pos == "A") "w nocy" else "noc" }
+    else if (hour == 4)  { if (pos == "A") "nad ranem" else "nad ranem" }
+    else if (hour < 11)  { if (pos == "A") "rano" else "rano" }
+    else if (hour == 11) { if (pos == "A") "przed południem"	else "przed południem" }
+    else if (hour == 12) { if (pos == "A") "w południe" else "południe" }
+    else if (hour < 15)	 { if (pos == "A") "wczesnym popołudniem" else "wczesne popołudnie" }
+    else if (hour < 17)  { if (pos == "A") "po południu" else "popołudnie" }
+    else if (hour < 18)  { if (pos == "A") "późnym popołudniem" else "późne popołudnie" }
+    else if (hour < 22)  { if (pos == "A") "wieczorem" else "wieczór"	}
+    else if (hour <= 24) { if (pos == "A") "w nocy" else "noc" }
+    else ""
 
-
- 
- 
- 	// start - first time point (string)
+  // start - first time point (string)
 	// end   - second time point (string)
 	// orientation - past, now, future
 	def sayHowLongAgoItWas(start: Date, end: Date, orientation: String = "past"): String = {
@@ -567,13 +515,12 @@ object PhraseGenerator {
 		// cound seconds
 		seconds = interval
 
-	  val result = Map(
+	  Map(
 	    	"totalSeconds" -> totalSeconds,
 	    	"totalHours" -> totalHours,
 	    	"totalDays" -> totalDays,
 	    	"years" -> years, "months" -> months, "days" -> days, "hours" -> hours, "minutes" -> minutes, "seconds" -> seconds
 	  )
-    result
 	}
  
 }
