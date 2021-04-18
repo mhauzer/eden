@@ -20,7 +20,8 @@ class ShellService(gender: String) {
   // reaction types:
   // - reflex based on a simple association (meme patterns associated with other meme patterns)
   def react(workingMemory: WorkingMemory): WorkingMemory = {
-    new WorkingMemory(List(Fcu(Idea.NOTHING, new TextPseudoVisionQuale(""), Nil)))
+    new WorkingMemory(Nil)
+    //new WorkingMemory(List(Fcu(Idea.NOTHING, new TextPseudoVisionQuale(""), Nil)))
 
 //    if (workingMemory.contains(Idea.NAME))
 //      (if (personService.gender == "f") Idea.EVE else Idea.ADAM) :: Nil

@@ -35,9 +35,10 @@ class MessageBoardActuator extends Actuator[WorkingMemory, MessageBoardEntry] {
       case _ => "Nie rozumiem"
     }
 
-  def act(workingMemory: WorkingMemory): MessageBoardEntry =
+  def act(workingMemory: WorkingMemory): MessageBoardEntry = {
     new MessageBoardEntry(
       translate(Fcu(Idea.EVE, new TextPseudoVisionQuale("Ewa"), Nil)),
-      translate(workingMemory.fcus.head)
+      workingMemory.fcus.map(translate).mkString(" ")
     )
+  }
 }
