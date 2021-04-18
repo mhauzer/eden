@@ -1,16 +1,15 @@
 package actuator
 
-import communication.{MessageBoardEntry, SimpleMessageBoard}
-import cognition.Idea
-import Idea.Idea
+import cognition.{Fcu, Idea, TextPseudoVisionQuale, WorkingMemory}
+import communication.MessageBoardEntry
 
-abstract class Actuator[SignalType, OutputType] {
-  def act(memes: List[SignalType]): OutputType
+abstract class Actuator[WorkingMemory, OutputType] {
+  def act(workingMemory: WorkingMemory): OutputType
 }
 
-class MessageBoardActuator extends Actuator[Idea, MessageBoardEntry] {
-  private def translate(idea: Idea): String =
-    idea match {
+class MessageBoardActuator extends Actuator[WorkingMemory, MessageBoardEntry] {
+  private def translate(fcu: Fcu): String =
+    fcu.idea match {
       case Idea.UNKNOWN => "Nie wiem"
       case Idea.GENDER => "płeć"
       case Idea.FEMALE => "kobieta"
@@ -36,5 +35,9 @@ class MessageBoardActuator extends Actuator[Idea, MessageBoardEntry] {
       case _ => "Nie rozumiem"
     }
 
-  def act(ideas: List[Idea]): MessageBoardEntry = new MessageBoardEntry(translate(Idea.EVE), translate(ideas.head))
+  def act(workingMemory: WorkingMemory): MessageBoardEntry =
+    new MessageBoardEntry(
+      translate(Fcu(Idea.EVE, new TextPseudoVisionQuale("Ewa"), Nil)),
+      translate(workingMemory.fcus.head)
+    )
 }

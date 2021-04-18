@@ -1,5 +1,0 @@
-package cognition
-
-class Experience {
-
-}

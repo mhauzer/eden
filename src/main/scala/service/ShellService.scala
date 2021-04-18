@@ -1,7 +1,7 @@
 package service
 
 import actuator.MessageBoardActuator
-import cognition.Idea
+import cognition.{Fcu, Idea, TextPseudoVisionQuale, WorkingMemory}
 import cognition.Idea.Idea
 import communication.MessageBoardEntry
 import sensor.MessageBoardSensor
@@ -19,15 +19,15 @@ class ShellService(gender: String) {
 
   // reaction types:
   // - reflex based on a simple association (meme patterns associated with other meme patterns)
-  def react(inputMemes: List[Idea]): List[Idea] = {
-    if (inputMemes.head == Idea.NAME)
-      (if (personService.gender == "f") Idea.EVE else Idea.ADAM) :: Nil
-    else
-      inputMemes
+  def react(workingMemory: WorkingMemory): WorkingMemory = {
+    new WorkingMemory(List(Fcu(Idea.NOTHING, new TextPseudoVisionQuale(""), Nil)))
+
+//    if (workingMemory.contains(Idea.NAME))
+//      (if (personService.gender == "f") Idea.EVE else Idea.ADAM) :: Nil
   }
 
   def iterate(input: MessageBoardEntry): MessageBoardEntry = {
-    new MessageBoardActuator().act(react(new MessageBoardSensor(input).get()))
+    new MessageBoardActuator().act(react(new WorkingMemory(new MessageBoardSensor(input).get())))
   }
 }
 
