@@ -1,8 +1,7 @@
 package service
 
 import actuator.MessageBoardActuator
-import cognition.{Fcu, Idea, TextPseudoVisionQuale, WorkingMemory}
-import cognition.Idea.Idea
+import cognition.WorkingMemory
 import communication.MessageBoardEntry
 import sensor.MessageBoardSensor
 
@@ -14,24 +13,15 @@ import sensor.MessageBoardSensor
     - actuators:
       1. MessageBoardActuator
  */
-class ShellService(gender: String) {
-  private val personService = new PersonService(gender)
-
-  // reaction types:
-  // - reflex based on a simple association (meme patterns associated with other meme patterns)
-  def react(workingMemory: WorkingMemory): WorkingMemory = {
-    new WorkingMemory(Nil)
-    //new WorkingMemory(List(Fcu(Idea.NOTHING, new TextPseudoVisionQuale(""), Nil)))
-
-//    if (workingMemory.contains(Idea.NAME))
-//      (if (personService.gender == "f") Idea.EVE else Idea.ADAM) :: Nil
-  }
-
+class ShellService {
   def iterate(input: MessageBoardEntry): MessageBoardEntry = {
-    new MessageBoardActuator().act(react(new WorkingMemory(new MessageBoardSensor(input).get())))
+    new MessageBoardActuator().act(
+      new WorkingMemory(
+        new MessageBoardSensor(input).get()
+      ).process
+    )
   }
 }
-
 
 //  private val skills = Map(
 //    Skill.DATE -> new CurrentDateAction,
@@ -45,30 +35,3 @@ class ShellService(gender: String) {
 //    Skill.VERSION -> new VersionAction,
 //    Skill.WEATHER -> new WeatherAction("http://api.openweathermap.org/data/2.5/weather?q=Wrocław&units=Metric&APIkey=0c5cdd2e1c08df83b6acc3ed70734cb1")
 //  )
-
-
-//  private val nlpService = null
-
-//  private val weatherService = null
-
-/*
-skills.put(Skill.TASK, new TaskManagerAction("http://localhost:8080/api/"))
-wordmap.put("zadanie", Skill.TASK)
- */
-
-//  private def understand(input: String) = { //  SkillInfo = {
-//    val sentence = new Sentence(input)
-//
-//    val firstWord = sentence.words.head.toLowerCase
-//
-//   // if (wordmap.keys.exists(_ == firstWord)) wordmap(firstWord) else Skill.ECHO
-//    Skill.ECHO
-//  }
-
-//  def act(input: String): String = {
-//    new SimpleDateFormat("yyyy-MM-dd").parse("2020-12-20")
-//    val message = understand(input)
-//   // skills(message.skill).perform(message.args)
-//    ""
-//  }
-

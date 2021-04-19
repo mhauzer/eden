@@ -1,6 +1,6 @@
 package actuator
 
-import cognition.{Fcu, Idea, TextPseudoVisionQuale, WorkingMemory}
+import cognition.{Fcu, Idea, Quale, TextPseudoVisionQuale, WorkingMemory}
 import communication.MessageBoardEntry
 
 abstract class Actuator[WorkingMemory, OutputType] {
@@ -10,7 +10,8 @@ abstract class Actuator[WorkingMemory, OutputType] {
 class MessageBoardActuator extends Actuator[WorkingMemory, MessageBoardEntry] {
   private def translate(fcu: Fcu): String =
     fcu.idea match {
-      case Idea.UNKNOWN => "Nie wiem"
+      case Idea.UNKNOWN => "nie wiem"
+      case Idea.GREETINGS => "cześć"
       case Idea.GENDER => "płeć"
       case Idea.FEMALE => "kobieta"
       case Idea.MALE => "mężczyzna"
@@ -24,21 +25,21 @@ class MessageBoardActuator extends Actuator[WorkingMemory, MessageBoardEntry] {
       case Idea.NOTHING => "nic"
       case Idea.SOMETHING => "coś"
       case Idea.DATE => "17 kwietnia 2021"
-      case Idea.TIME => "Nie mam zegarka"
-      case Idea.TIME2 => "Nie wiem"
+      case Idea.TIME => "nie mam zegarka"
+      case Idea.TIME2 => "nie wiem"
       case Idea.DEMO => "Można ze mną rozmawiać o wszystkim!"
       case Idea.ECHO => "echo"
       case Idea.QUIT => ":q"
-      case Idea.TASK => "Nie masz nic do roboty"
-      case Idea.VERSION => "Wersja 0.1"
-      case Idea.WEATHER => "Zapowiada się piękna pogoda"
-      case _ => "Nie rozumiem"
+      case Idea.TASK => "nie masz nic do roboty"
+      case Idea.VERSION => "wersja 0.1"
+      case Idea.WEATHER => "zapowiada się piękna pogoda"
+      case _ => "nie rozumiem"
     }
 
   def act(workingMemory: WorkingMemory): MessageBoardEntry = {
     new MessageBoardEntry(
-      translate(Fcu(Idea.EVE, new TextPseudoVisionQuale("Ewa"), Nil)),
-      workingMemory.fcus.map(translate).mkString(" ")
+      translate(Fcu(Idea.EVE, new TextPseudoVisionQuale("Ewa", 0, Quale.Medium, Quale.Medium, 3), Nil)),
+      workingMemory.fcus.filter(_.ttl >= WorkingMemory.ReflexTreshold).map(translate).mkString(" ")
     )
   }
 }

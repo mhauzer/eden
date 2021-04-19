@@ -1,7 +1,7 @@
 package sensor
 
 import communication.MessageBoardEntry
-import cognition.{Fcu, Idea, TextPseudoVisionQuale}
+import cognition.{Fcu, Idea, Quale, TextPseudoVisionQuale}
 import Idea.Idea
 import nlp.Lexicon
 
@@ -60,8 +60,10 @@ object CognitiveParser {
 //  )
 
   def parseLine(line: String): List[Fcu] = {
+    val DefaultTtl: Byte = 3
+
     (for (token <- line.split(Separator)) yield
-      Fcu(Idea.WORD, new TextPseudoVisionQuale(token), Nil)).toList
+      Fcu(Idea.ENTITY, new TextPseudoVisionQuale(token, 0, Quale.Medium, Quale.Medium, DefaultTtl), Nil, DefaultTtl)).toList
 
     //    var recognizedPatterns: List[NlpPattern] = Nil
 //    patterns.foreach(_.reset())

@@ -5,7 +5,9 @@ object Idea extends Enumeration {
   type Idea = Value
   val
     UNKNOWN,
+    ENTITY,
     WORD,
+    GREETINGS,
     GENDER,
       FEMALE,
       MALE,
