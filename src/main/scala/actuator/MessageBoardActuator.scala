@@ -38,8 +38,8 @@ class MessageBoardActuator extends Actuator[WorkingMemory, MessageBoardEntry] {
 
   def act(workingMemory: WorkingMemory): MessageBoardEntry = {
     new MessageBoardEntry(
-      translate(Fcu(Idea.EVE, new TextPseudoVisionQuale("Ewa", 0, Quale.Medium, Quale.Medium, 3), Nil)),
-      workingMemory.fcus.filter(_.ttl >= WorkingMemory.ReflexTreshold).map(translate).mkString(" ")
+      translate(Fcu(1, Idea.EVE, new TextPseudoVisionQuale("Ewa", 0, Quale.Medium, Quale.Medium, 3), Nil)),
+      workingMemory.fcus.filter(_.ttl >= WorkingMemory.ReflexTtlThreshold).map(translate).mkString(" ")
     )
   }
 }

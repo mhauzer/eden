@@ -18,7 +18,7 @@ class ShellService {
     new MessageBoardActuator().act(
       new WorkingMemory(
         new MessageBoardSensor(input).get()
-      ).process
+      ).process()
     )
   }
 }

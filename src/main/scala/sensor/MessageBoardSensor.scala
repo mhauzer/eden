@@ -30,7 +30,10 @@ case class NlpPattern(idea: Idea, pattern: List[String]) {
 
 // in fact it looks rather like a cognitive tokenizer than parser but we'll see how it is in the future
 object CognitiveParser {
-//  val patterns = List(
+  private val defaultTtl: Byte = 3
+  private val defaultStreamId: Byte = 0
+
+  //  val patterns = List(
 //    NlpPattern(Idea.UNKNOWN, "nie" :: "wiedzieć" :: Nil),
 //    NlpPattern(Idea.UNKNOWN, "nie" :: "znać" :: Nil),
 //    NlpPattern(Idea.GENDER, "płeć" :: Nil),
@@ -59,11 +62,23 @@ object CognitiveParser {
 //    NlpPattern(Idea.WEATHER, "aura" :: Nil)
 //  )
 
-  def parseLine(line: String): List[Fcu] = {
-    val DefaultTtl: Byte = 3
+  def parseLine(line: String, seq: Integer = 1): List[Fcu] = {
+    (if (line.isEmpty) return Nil
+    else
+    Fcu(
+      seq,
+      Idea.ENTITY,
+      new TextPseudoVisionQuale(
+        line.head.toString,
+        defaultStreamId,
+        Quale.Medium,
+        if (line.head.isWhitespace) Quale.Low else Quale.Medium,
+        defaultTtl
+      )
+    )::Nil) ::: parseLine(if (line.length > 1) line.substring(1) else "", seq + 1)
 
-    (for (token <- line.split(Separator)) yield
-      Fcu(Idea.ENTITY, new TextPseudoVisionQuale(token, 0, Quale.Medium, Quale.Medium, DefaultTtl), Nil, DefaultTtl)).toList
+    // (for (token <- line.split(Separator)) yield
+    //  Fcu(Idea.ENTITY, new TextPseudoVisionQuale(token, 0, Quale.Medium, Quale.Medium, DefaultTtl), Nil, DefaultTtl)).toList
 
     //    var recognizedPatterns: List[NlpPattern] = Nil
 //    patterns.foreach(_.reset())
@@ -77,7 +92,7 @@ object CognitiveParser {
 //    if (recognizedPatterns.nonEmpty) recognizedPatterns.map(_.idea) else Idea.UNKNOWN :: Nil
   }
 
-  private val Separator = "[ ,.\\-\\(\\);:\\[\\]!?]+"
+  // private val Separator = "[ ,.\\-\\(\\);:\\[\\]!?]+"
 }
 
 
