@@ -1,6 +1,7 @@
 package actuator
 
 import cognition.{Fcu, Idea, Quale, TextPseudoVisionQuale, WorkingMemory}
+import cognition.value.Sequence
 import communication.MessageBoardEntry
 
 abstract class Actuator[WorkingMemory, OutputType] {
@@ -38,7 +39,7 @@ class MessageBoardActuator extends Actuator[WorkingMemory, MessageBoardEntry] {
 
   def act(workingMemory: WorkingMemory): MessageBoardEntry = {
     new MessageBoardEntry(
-      translate(Fcu(1, Idea.EVE, new TextPseudoVisionQuale("Ewa", 0, Quale.Medium, Quale.Medium, 3), Nil)),
+      translate(Fcu(new Sequence(1), Idea.EVE, new TextPseudoVisionQuale("Ewa", 0, Quale.VolumeMedium, Quale.VarianceMedium, WorkingMemory.ReflexTtlThreshold), Nil)),
       workingMemory.fcus.filter(_.ttl >= WorkingMemory.ReflexTtlThreshold).map(translate).mkString(" ")
     )
   }

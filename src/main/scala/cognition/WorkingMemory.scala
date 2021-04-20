@@ -1,6 +1,7 @@
 package cognition
 
 import cognition.WorkingMemory.isReflexEligible
+import cognition.value.{Sequence, Ttl, Volume}
 
 class WorkingMemory(val fcus: List[Fcu]) {
   // reaction types:
@@ -27,13 +28,13 @@ class WorkingMemory(val fcus: List[Fcu]) {
 
   def process(): WorkingMemory = {
     // interpretation of strings as words that have meaning - for optimisation the parser generates complete morpholigic information
-    val greetings = new TextPseudoVisionQuale("hej",0, Quale.Medium, Quale.Medium, 3)
+    val greetings = new TextPseudoVisionQuale("hej",0, Quale.VolumeMedium, Quale.VarianceMedium, WorkingMemory.ReflexTtlThreshold)
     val wordSimpleMeanings = fcus
         .filter(
           f => f.idea == Idea.ENTITY
             && f.quale.content == greetings.content
             && isReflexEligible(f)
-        ).map(f => Fcu(1, f.quale match { case _ => Idea.GREETINGS }))
+        ).map(f => Fcu(new Sequence(1), f.quale match { case _ => Idea.GREETINGS }))
     new WorkingMemory(WorkingMemory.reflex(WorkingMemory.degrade(fcus) ::: wordSimpleMeanings))
   }
 
@@ -41,15 +42,15 @@ class WorkingMemory(val fcus: List[Fcu]) {
 }
 
 object WorkingMemory {
-  val ReflexTtlThreshold: Byte = 3
-  val ReflexLevelThreshold: Byte = (Quale.Low + 1).toByte
+  val ReflexTtlThreshold: Ttl = new Ttl(3)
+  val ReflexLevelThreshold: Volume = new Volume((Quale.VolumeLow.toByte + 1).toByte)
 
   def isReflexEligible(f: Fcu): Boolean =
-    f.quale.level > WorkingMemory.ReflexLevelThreshold && f.quale.ttl >= WorkingMemory.ReflexTtlThreshold
+    f.quale.volume > WorkingMemory.ReflexLevelThreshold && f.quale.ttl >= WorkingMemory.ReflexTtlThreshold
 
   def reflex(fcus: List[Fcu]): List[Fcu] =
     if (fcus.filter(_.ttl >= ReflexTtlThreshold).map(_.idea).contains(Idea.GREETINGS))
-      Fcu(1, Idea.GREETINGS) :: degrade(fcus)
+      Fcu(new Sequence(1), Idea.GREETINGS) :: degrade(fcus)
     else
       degrade(fcus)
 

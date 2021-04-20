@@ -3,6 +3,7 @@ package sensor
 import communication.MessageBoardEntry
 import cognition.{Fcu, Idea, Quale, TextPseudoVisionQuale}
 import Idea.Idea
+import cognition.value.{Sequence, Ttl}
 import nlp.Lexicon
 
 case class NlpPattern(idea: Idea, pattern: List[String]) {
@@ -30,7 +31,7 @@ case class NlpPattern(idea: Idea, pattern: List[String]) {
 
 // in fact it looks rather like a cognitive tokenizer than parser but we'll see how it is in the future
 object CognitiveParser {
-  private val defaultTtl: Byte = 3
+  private val defaultTtl: Ttl = new Ttl(3)
   private val defaultStreamId: Byte = 0
 
   //  val patterns = List(
@@ -62,7 +63,7 @@ object CognitiveParser {
 //    NlpPattern(Idea.WEATHER, "aura" :: Nil)
 //  )
 
-  def parseLine(line: String, seq: Integer = 1): List[Fcu] = {
+  def parseLine(line: String, seq: Sequence = new Sequence(1)): List[Fcu] = {
     (if (line.isEmpty) return Nil
     else
     Fcu(
@@ -71,11 +72,11 @@ object CognitiveParser {
       new TextPseudoVisionQuale(
         line.head.toString,
         defaultStreamId,
-        Quale.Medium,
-        if (line.head.isWhitespace) Quale.Low else Quale.Medium,
+        Quale.VolumeMedium,
+        if (line.head.isWhitespace) Quale.VarianceLow else Quale.VarianceMedium,
         defaultTtl
       )
-    )::Nil) ::: parseLine(if (line.length > 1) line.substring(1) else "", seq + 1)
+    )::Nil) ::: parseLine(if (line.length > 1) line.substring(1) else "", new Sequence(seq.value + 1))
 
     // (for (token <- line.split(Separator)) yield
     //  Fcu(Idea.ENTITY, new TextPseudoVisionQuale(token, 0, Quale.Medium, Quale.Medium, DefaultTtl), Nil, DefaultTtl)).toList
