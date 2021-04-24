@@ -1,7 +1,6 @@
 package cognition
 
-import cognition.QualeType.QualeType
-import cognition.SensoryType.SensoryType
+import cognition.SensoryType.{SensoryType, Unknown}
 import cognition.value.{Ttl, Volume}
 
 // https://plato.stanford.edu/entries/qualia/
@@ -10,12 +9,15 @@ case class Quale(
                   volume: Volume = Quale.VolumeLow,
                   variance: Byte = Quale.VarianceLow,
                   ttl: Ttl = Quale.TtlHigh,
-                  value: String,
+                  value: String = "",
                   sense: SensoryType
                 ) {
-  override def toString: String = s"streamId=$streamId, volume=$volume, variance=$variance, ttl=$ttl, value=$value, sense=$sense"
   def degrade: Quale =
     copy(ttl = if (ttl > Quale.TtlLow) new Ttl((ttl.value - 1).toByte) else ttl, value = value, sense = sense)
+
+  def + (q: Quale): Quale = copy(value = value + q.value)
+
+  override def toString: String = s"Quale(streamId=$streamId, volume=$volume, variance=$variance, ttl=$ttl, value=$value, sense=$sense)"
 }
 
 object Quale {
@@ -30,4 +32,6 @@ object Quale {
   val VarianceLow: Byte = -0x80
   val VarianceMedium: Byte = 0
   val VarianceHigh: Byte = 0x7F
+
+  val Empty: Quale = Quale(sense = Unknown)
 }

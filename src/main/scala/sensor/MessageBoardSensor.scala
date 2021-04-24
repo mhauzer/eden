@@ -1,7 +1,7 @@
 package sensor
 
 import communication.MessageBoardEntry
-import cognition.{Fcu, Idea, Quale, SensoryType}
+import cognition.{Clock, Fcu, Idea, Quale, SensoryType}
 import Idea.Idea
 import cognition.value.{Sequence, Ttl}
 import nlp.Lexicon
@@ -63,7 +63,7 @@ object CognitiveParser {
 //    NlpPattern(Idea.WEATHER, "aura" :: Nil)
 //  )
 
-  def parseLine(line: String, seq: Sequence = new Sequence(1)): List[Fcu] = {
+  def parseLine(line: String, seq: Sequence = new Sequence(Clock.get())): List[Fcu] = {
     (if (line.isEmpty) return Nil
     else
     Fcu(
@@ -77,7 +77,7 @@ object CognitiveParser {
         line.head.toString,
         SensoryType.TextPseudoVision
       )
-    )::Nil) ::: parseLine(if (line.length > 1) line.substring(1) else "", new Sequence(seq.value + 1))
+    )::Nil) ::: parseLine(if (line.length > 1) line.substring(1) else "", new Sequence(Clock.get()))
 
     // (for (token <- line.split(Separator)) yield
     //  Fcu(Idea.ENTITY, new TextPseudoVisionQuale(token, 0, Quale.Medium, Quale.Medium, DefaultTtl), Nil, DefaultTtl)).toList

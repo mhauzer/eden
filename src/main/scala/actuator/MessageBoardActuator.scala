@@ -1,8 +1,10 @@
 package actuator
 
-import cognition.{Fcu, Idea, Quale, SensoryType, WorkingMemory}
+import cognition._
 import cognition.value.Sequence
 import communication.MessageBoardEntry
+
+import scala.collection.immutable.HashSet
 
 abstract class Actuator[WorkingMemory, OutputType] {
   def act(workingMemory: WorkingMemory): OutputType
@@ -39,8 +41,8 @@ class MessageBoardActuator extends Actuator[WorkingMemory, MessageBoardEntry] {
 
   def act(workingMemory: WorkingMemory): MessageBoardEntry = {
     new MessageBoardEntry(
-      translate(Fcu(new Sequence(1), Idea.EVE, Quale(0, Quale.VolumeMedium, Quale.VarianceMedium, WorkingMemory.ReflexTtlThreshold, "Ewa", SensoryType.TextPseudoVision), Nil)),
-      workingMemory.fcus.filter(_.ttl >= WorkingMemory.ReflexTtlThreshold).map(translate).mkString(" ")
+      translate(Fcu(new Sequence(Clock.get()), Idea.EVE, Quale(0, Quale.VolumeMedium, Quale.VarianceMedium, WorkingMemory.ReflexTtlThreshold, "Ewa", SensoryType.TextPseudoVision), HashSet())),
+      workingMemory.content.filter(_.ttl >= WorkingMemory.ReflexTtlThreshold).map(translate).mkString(" ")
     )
   }
 }

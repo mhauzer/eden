@@ -13,14 +13,13 @@ import sensor.MessageBoardSensor
     - actuators:
       1. MessageBoardActuator
  */
-class ShellService {
-  def iterate(input: MessageBoardEntry): MessageBoardEntry = {
+class Shell {
+  def iterate(input: MessageBoardEntry): MessageBoardEntry =
     new MessageBoardActuator().act(
       new WorkingMemory(
         new MessageBoardSensor(input).get()
       ).process()
     )
-  }
 }
 
 //  private val skills = Map(

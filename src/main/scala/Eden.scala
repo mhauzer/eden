@@ -1,11 +1,11 @@
 import communication.{SimpleMessageBoard, MessageBoardEntry}
-import service.ShellService
+import service.Shell
 
 import scala.annotation.tailrec
 import scala.io.StdIn.readLine
 
 object Eden extends App {
-  val shell = new ShellService
+  val shell = new Shell
 
   @tailrec
   def interact(messageBoard: SimpleMessageBoard): Boolean = {
