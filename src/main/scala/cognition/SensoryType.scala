@@ -1,5 +1,6 @@
 package cognition
 
-trait SensoryType {
-
+object SensoryType extends Enumeration {
+  type SensoryType = Value
+  val TextPseudoVision: SensoryType = Value
 }

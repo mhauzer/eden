@@ -3,6 +3,7 @@ package cognition
 object Idea extends Enumeration {
   type Idea = Value
   val
+    NULL, // technical
     UNKNOWN,
     ENTITY,
     WORD,

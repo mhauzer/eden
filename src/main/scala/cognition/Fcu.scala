@@ -5,7 +5,7 @@ import cognition.value.{Sequence, Ttl}
 
 // https://link.springer.com/article/10.1007/s12559-017-9538-5
 // todo: I want to have "quale: Quale[String]" here
-case class Fcu(seq: Sequence, idea: Idea, quale: TextPseudoVisionQuale = null, associations: List[Fcu] = Nil, ttl: Ttl = Fcu.TtlMedium) {
+case class Fcu(seq: Sequence, idea: Idea, quale: Quale = null, associations: List[Fcu] = Nil, ttl: Ttl = Fcu.TtlMedium) {
   def degrade(): Fcu = Fcu(
       seq,
       idea,
@@ -21,4 +21,7 @@ object Fcu {
   val TtlLow: Ttl = new Ttl(0)
   val TtlMedium: Ttl = new Ttl(3)
   val TtlHigh: Ttl = new Ttl(6)
+  val Empty: Fcu = Fcu(0, Idea.NULL)
+
+  def nonEmpty(f: Fcu): Boolean = f != Fcu.Empty
 }

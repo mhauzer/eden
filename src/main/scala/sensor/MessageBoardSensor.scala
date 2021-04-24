@@ -1,7 +1,7 @@
 package sensor
 
 import communication.MessageBoardEntry
-import cognition.{Fcu, Idea, Quale, TextPseudoVisionQuale}
+import cognition.{Fcu, Idea, Quale, SensoryType}
 import Idea.Idea
 import cognition.value.{Sequence, Ttl}
 import nlp.Lexicon
@@ -69,12 +69,13 @@ object CognitiveParser {
     Fcu(
       seq,
       Idea.ENTITY,
-      new TextPseudoVisionQuale(
-        line.head.toString,
+      new Quale(
         defaultStreamId,
         Quale.VolumeMedium,
         if (line.head.isWhitespace) Quale.VarianceLow else Quale.VarianceMedium,
-        defaultTtl
+        defaultTtl,
+        line.head.toString,
+        SensoryType.TextPseudoVision
       )
     )::Nil) ::: parseLine(if (line.length > 1) line.substring(1) else "", new Sequence(seq.value + 1))
 

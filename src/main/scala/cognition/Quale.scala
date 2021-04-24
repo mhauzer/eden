@@ -1,15 +1,21 @@
 package cognition
 
-import cognition.value.{Volume, Ttl}
+import cognition.QualeType.QualeType
+import cognition.SensoryType.SensoryType
+import cognition.value.{Ttl, Volume}
 
 // https://plato.stanford.edu/entries/qualia/
-abstract class Quale(
-                      val streamId: Int = 0,
-                      val volume: Volume = Quale.VolumeLow,
-                      val variance: Byte = Quale.VarianceLow,
-                      val ttl: Ttl = Quale.TtlHigh
-                    ) {
-  override def toString: String = s"streamId=$streamId, level=$volume, variance=$variance, ttl=$ttl"
+case class Quale(
+                  streamId: Int = 0,
+                  volume: Volume = Quale.VolumeLow,
+                  variance: Byte = Quale.VarianceLow,
+                  ttl: Ttl = Quale.TtlHigh,
+                  value: String,
+                  sense: SensoryType
+                ) {
+  override def toString: String = s"streamId=$streamId, volume=$volume, variance=$variance, ttl=$ttl, value=$value, sense=$sense"
+  def degrade: Quale =
+    copy(ttl = if (ttl > Quale.TtlLow) new Ttl((ttl.value - 1).toByte) else ttl, value = value, sense = sense)
 }
 
 object Quale {
