@@ -7,5 +7,7 @@ class Volume(val value: Byte) extends AnyVal {
 }
 
 object Volume {
+  def Volume(v: Byte): Volume = new Volume(v)
   implicit def Volume2Byte(x: Volume): Byte = x.value
+  implicit def Int2Volume(x: Int): Volume = Volume(x.toByte)
 }

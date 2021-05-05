@@ -283,7 +283,7 @@ object PhraseGenerator {
 		else "teraz"
     
     
-	def determineNounCaseForNumber(number: Integer): HashMap[String, String] = {
+	def determineNounCaseForNumber(number: Int): HashMap[String, String] = {
 		var nounNumber = if (number == 1) "singular" else "plural"
     var nounCase = ""
 		

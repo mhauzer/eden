@@ -5,9 +5,12 @@ object Idea extends Enumeration {
   val
     NULL, // technical
     UNKNOWN,
-    ENTITY,
+    QUALE,
+    LETTER,
     WORD,
     GREETINGS,
+
+
     GENDER,
       FEMALE,
       MALE,

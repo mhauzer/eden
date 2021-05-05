@@ -1,33 +1,32 @@
 package cognition
 
 import cognition.SensoryType.{SensoryType, Unknown}
-import cognition.value.{Ttl, Volume}
+import cognition.value.{Density, Volume}
+import cognition.value.Volume.Volume
+import cognition.value.Density.Density
 
 // https://plato.stanford.edu/entries/qualia/
-case class Quale(
+sealed case class Quale(
                   streamId: Int = 0,
                   volume: Volume = Quale.VolumeLow,
+                  density: Density = Quale.DensityLow, // ~ frequency, entropy?
                   variance: Byte = Quale.VarianceLow,
-                  ttl: Ttl = Quale.TtlHigh,
                   value: String = "",
-                  sense: SensoryType
+                  sense: SensoryType = SensoryType.Unknown
                 ) {
-  def degrade: Quale =
-    copy(ttl = if (ttl > Quale.TtlLow) new Ttl((ttl.value - 1).toByte) else ttl, value = value, sense = sense)
-
   def + (q: Quale): Quale = copy(value = value + q.value)
 
-  override def toString: String = s"Quale(streamId=$streamId, volume=$volume, variance=$variance, ttl=$ttl, value=$value, sense=$sense)"
+  override def toString: String = s"\n\tQuale(streamId=$streamId, volume=$volume, variance=$variance, value=$value, sense=$sense)\n"
 }
 
 object Quale {
-  val VolumeLow: Volume = new Volume(-0x80)
-  val VolumeMedium: Volume = new Volume(0)
-  val VolumeHigh: Volume = new Volume(0x7F)
+  val VolumeLow: Volume = -0x80
+  val VolumeMedium: Volume = 0
+  val VolumeHigh: Volume = 0x7F
 
-  val TtlLow: Ttl = new Ttl(-0x80)
-  val TtlMedium: Ttl = new Ttl(0)
-  val TtlHigh: Ttl = new Ttl(0x7F)
+  val DensityLow: Density = -0x80
+  val DensityMedium: Density = 0
+  val DensityHigh: Density = 0x7F
 
   val VarianceLow: Byte = -0x80
   val VarianceMedium: Byte = 0

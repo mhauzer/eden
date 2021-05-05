@@ -1,8 +1,10 @@
 package cognition
 
 object Clock {
-  private var value: Integer = 0
+  def synchronize(value: Int): Unit = if (value > this.value + 1) this.value = value
+
+  private var value: Int = 0
 
   def reset(): Unit = value = 0
-  def get(): Integer = { value += 1; value }
+  def get(): Int = { value += 1; value }
 }

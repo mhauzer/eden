@@ -3,7 +3,7 @@ package service
 import actuator.MessageBoardActuator
 import cognition.WorkingMemory
 import communication.MessageBoardEntry
-import sensor.MessageBoardSensor
+import sensor.{MessageBoardParsingSensor, MessageBoardSensor}
 
 /*
   ShellService is a shell of an entity that is capable of communicating with the outer world through the following
@@ -17,7 +17,8 @@ class Shell {
   def iterate(input: MessageBoardEntry): MessageBoardEntry =
     new MessageBoardActuator().act(
       new WorkingMemory(
-        new MessageBoardSensor(input).get()
+        new MessageBoardSensor(input).get() :::
+          new MessageBoardParsingSensor(input).get() // synesthesia
       ).process()
     )
 }
